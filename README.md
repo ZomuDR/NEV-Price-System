@@ -314,4 +314,4 @@ cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System\frontend
 ```
 npm run dev
 ```
-在你的Chrome浏览器中访问http://localhost:5173或者http://127.0.0.1:5173（确保你的电脑5173、5432、8000这三个端口没有被占用），看到用户登录页面，代表你成功将系统部署并运行了。
+在你的Chrome浏览器中访问[http://localhost:5173]或者[http://127.0.0.1:5173]（确保你的电脑5173、5432、8000这三个端口没有被占用），看到用户登录页面，代表你成功将系统部署并运行了。
