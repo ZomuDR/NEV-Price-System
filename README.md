@@ -1,20 +1,252 @@
-# NEV_Price_System
+# 说明文档
 ## 项目概述
 本项目为一款新能源汽车价格预测分析系统，主要是基于XGBoost模型为预测核心模型算法，目前仅采用汽车之家往年数据进行训练，且为固定模型参数，未来将结合MLP综合大模型进行估价与动态爬虫模块。
 ## 项目技术栈
-本项目前端采用Vue.js框架，结合路由管理以及状态管理，采用Echarts制作可视化图表；
-后端采用Django框架，Django Restful API接口规范，
-数据库为PostgreSQL，便于与Django进行后台管理。
+本项目前端采用Vue.js框架，结合路由管理以及状态管理，采用Echarts制作可视化图表；后端采用Django框架，Django Restful API接口规范，数据库为PostgreSQL（支持mysql与sqllite3），便于与Django进行后台管理。
 ## 特别申明
 本项目目前已开源，其中大部分代码由AI辅助生成，主要分享全栈开发框架经验（本人是大学生），最后希望社区支持，我将完成这些未来开发模块
-# English
+# Documentation
 ## Project Overview
 This project is a new energy vehicle price prediction and analysis system, mainly based on the XGBoost model as the core prediction algorithm. Currently, it only uses historical data from Autohome for training, with fixed model parameters. In the future, it will integrate an MLP-based comprehensive large model for pricing and a dynamic web scraping module.
 
 ## Project Technology Stack
 The front end of this project uses the Vue.js framework, combined with routing management and state management, and utilizes ECharts to create visual charts;
 The back end uses the Django framework and follows Django Restful API specifications,
-The database is PostgreSQL, which facilitates backend management with Django.
+The database is PostgreSQL(Supports MySQL and SQLite3), which facilitates backend management with Django.
 
 ## Special Statement
 This project is currently open source. Most of the code was generated with AI assistance, mainly sharing full-stack development framework experience (I am a university student). Finally, I hope for community support, and I will complete these future development modules.
+# 项目说明
+## 项目结构说明
+```
+NEV_Price_System/                        # 项目根目录
+│
+├── manage.py                            # Django 管理入口
+├── requirements.txt                     # Python 依赖清单
+├── .env.example                         # 后端环境变量模板
+│
+├── NEV_Price_System/                    # Django 项目配置包
+│   ├── settings.py                      # 全局配置
+│   ├── urls.py                          # 根路由汇总
+│   ├── wsgi.py                          # WSGI 部署入口
+│   └── asgi.py                          # ASGI 部署入口
+│
+├── users/                               # 用户模块
+│   ├── models.py                        # User 模型
+│   ├── serializers.py                   # 注册/用户序列化器
+│   ├── views.py                         # 注册、登录、个人信息 API
+│   ├── views_admin.py                   # 管理员用户管理 ViewSet
+│   ├── urls.py                          # 用户模块路由
+│   └── migrations/                      # 数据库迁移文件
+│
+├── cars/                                # 车型与预测模块
+│   ├── models.py                        # Car、MLModel、PredictionHistory、FavoriteCar
+│   ├── serializers.py                   # 车型序列化器
+│   ├── views.py                         # 车型 CRUD API
+│   ├── views_dashboard.py               # 首页仪表盘统计 API
+│   ├── views_predict.py                 # 价格预测、模型管理、相似车型 API
+│   ├── views_favorites.py               # 收藏相关 API
+│   ├── admin.py                         # Django Admin 注册
+│   ├── urls.py                          # 车型模块路由汇总
+│   ├── migrations/                      # 数据库迁移文件
+│   └── management/
+│       └── commands/
+│           ├── import_data.py           # 从 Excel 导入车型数据
+│           ├── update_data.py           # 从 Excel 更新车型数据
+│           └── train_model.py           # 训练 XGBoost 模型并入库
+│
+├── scripts/                             # 离线分析脚本
+│   ├── train_model_visual.py            # 终端训练过程可视化 + R²/RMSE
+│   ├── shap_analysis.py                 # SHAP 特征重要性 + 学习曲线 + 残差分析
+│   ├── data_statistics.py               # 原始/筛选数据统计图 + 重要性比对
+│   ├── evaluate_model.py                # 模型评估报告输出
+│   ├── extract_features.py              # 特征提取脚本
+│   └── feature_analysis.py              # 特征分析脚本
+│
+├── static/                              # 静态资源
+│   ├── data/
+│       └── car_data_15features.xlsx     # 车辆原始数据集
+│
+└── frontend/                            # Vue 3 前端项目
+    ├── package.json                     # 前端依赖清单
+    ├── vite.config.js                   # Vite 构建配置
+    ├── tsconfig.json                    # TypeScript 配置
+    ├── index.html                       # 入口 HTML
+    ├── .env                             # 前端环境变量
+    ├── .env.example                     # 前端环境变量模板
+    │
+    └── src/
+        ├── main.js                      # Vue 应用入口
+        ├── App.vue                      # 根组件
+        ├── env.d.ts                     # 环境变量类型声明
+        │
+        ├── assets/
+        │   └── styles/
+        │       └── variables.scss       # 全局 CSS 变量与主题
+        │
+        ├── router/
+        │   └── index.js                 # Vue Router 路由配置
+        │
+        ├── stores/
+        │   └── user.js                  # Pinia 用户状态管理
+        │
+        ├── utils/
+        │   └── axios.js                 # Axios 实例与拦截器
+        │
+        └── views/
+            ├── System.vue               # 主布局框架（侧边栏 + 顶栏）
+            │
+            ├── auth/                    # 认证页面
+            │   ├── Login.vue            # 登录页
+            │   └── Register.vue         # 注册页
+            │
+            ├── core/                    # 核心功能页面
+            │   ├── FirstView.vue        # 仪表盘首页
+            │   ├── MarketView.vue       # 市场车型浏览与收藏
+            │   ├── PredictView.vue      # 价格预测
+            │   ├── AnalysisView.vue     # 市场分析
+            │   ├── FavoritesView.vue    # 我的收藏
+            │   ├── HistoryView.vue      # 预测历史记录
+            │   └── HelpView.vue         # 帮助中心
+            │
+            ├── user/                    # 用户中心
+            │   ├── ProfileView.vue      # 个人资料
+            │   └── SettingsView.vue     # 系统设置
+            │
+            ├── admin/                   # 后台管理
+            │   ├── AdminView.vue        # 车型数据管理
+            │   ├── UserManageView.vue   # 用户管理
+            │   └── ModelAdminView.vue   # 模型版本管理
+            │
+            └── error/
+                └── NotFound.vue         # 404 页面
+```
+# Project Description
+## Project Structure Description
+```
+NEV_Price_System/                        # Project root directory
+│
+├─ manage.py                            # Django management entry point
+├─ requirements.txt                     # Python dependency list
+├─ .env.example                          # Backend environment variable template
+│
+├─ NEV_Price_System/                    # Django project configuration package
+│   ├─ settings.py                      # Global configuration
+│   ├── urls.py                          # Root route aggregation
+│   ├── wsgi.py                          # WSGI deployment entry point
+│   └── asgi.py                          # ASGI deployment entry point
+│
+├─ users/                               # User module
+│   ├─ models.py                          # User model
+│   ├─ serializers.py                   # Registration/User Serializer
+│   ├─ views.py                          # Registration, login, personal information API
+│   ├─ views_admin.py                   # ViewSet for managing admin users
+│   ├── urls.py                          # User module routing
+│   └── migrations/                      # Database migration files
+│
+├─ cars/                                # Vehicle models and prediction module
+│   ├─ models.py                          # Car, MLModel, PredictionHistory, FavoriteCar
+│   ├─ serializers.py                   # vehicle model serializer
+│   ├─ views.py                          # Vehicle model CRUD API
+│   ├─ views_dashboard.py               # Home dashboard statistics API
+│   ├─ views_predict.py                 # Price prediction, model management, similar vehicle model API
+│   ├── views_favorites.py               # Favorites-related API
+│   ├─ admin.py                          # Django Admin registration
+│   ├── urls.py                          # Model module routing summary
+│   ├─ migrations/                      # Database migration files
+│   └── management/
+│       └── commands/
+│           ├─ import_data.py           # Import vehicle model data from Excel
+│           ├─ update_data.py           # Update vehicle model data from Excel
+│           └── train_model.py           # Train the XGBoost model and load it into the library
+│
+├─ scripts/                             # Offline analysis scripts
+│   ├─ train_model_visual.py            # Terminal training process visualization + R²/RMSE
+│   ├── shap_analysis.py                 # SHAP feature importance + learning curve + residual analysis
+│   ├─ data_statistics.py               # Original/filtered data statistics chart + importance comparison
+│   ├─ evaluate_model.py                # Output of model evaluation report
+│   ├─ extract_features.py              # Feature extraction script
+│   └── feature_analysis.py              # Feature analysis script
+│
+├─ static/                              # Static resources
+│   ├── data/
+│       └── car_data_15features.xlsx     # Original vehicle dataset
+│
+└── frontend/                            # Vue 3 frontend project
+    ├─ package.json                     # Front-end dependency list
+    ├─ vite.config.js                   # Vite build configuration
+    ├─ tsconfig.json                    # TypeScript configuration
+    ├─ index.html                       # Entry HTML
+    ├─ .env                             # Front-end environment variables
+    ├─ .env.example                     # Front-end environment variable template
+    │
+    └── src/
+        ├─ main.js                      # Vue application entry
+        │   ├─ App.vue                      # Root component
+        ├─ env.d.ts # Environment variable type declaration
+        │
+        ├── assets/
+        │   └── styles/
+        │       └── variables.scss       # Global CSS variables and themes
+        │
+        ├── router/
+        │   └── index.js                 # Vue Router routing configuration
+        │
+        ├── stores/
+        │   └── user.js                  # Pinia user state management
+        │
+        ├── utils/
+        │   └── axios.js                 # Axios instance and interceptor
+        │
+        └── views/
+            │   ├─ System.vue               # Main layout framework (sidebar + header)
+            │
+            ├─ auth/                    # Authentication page
+            │   ├─ Login.vue            # Login page
+            │   └── Register.vue         # Registration page
+            │
+            ├─ core/                    # Core functional pages
+            │   ├─ FirstView.vue        # dashboard homepage
+            │   ├─ MarketView.vue       # Market vehicle browsing and collection
+            │   ├─ PredictView.vue      # Price Prediction
+            │   ├─ AnalysisView.vue     # Market Analysis
+            │   ├─ FavoritesView.vue    # My Favorites
+            │   ├─ HistoryView.vue      # Prediction history
+            │   └── HelpView.vue         # Help Center
+            │
+            ├─ user/                    # User center
+            │   ├─ ProfileView.vue      # 个人资料
+            │   └── SettingsView.vue     # System Settings
+            │
+            ├─ admin/                   # Back-end management
+            │   ├─ AdminView.vue        # Vehicle model data management
+            │   ├─ UserManageView.vue   # User Management
+            │   └── ModelAdminView.vue   # Model Version Management
+            │
+            └── error/
+                └── NotFound.vue         # 404 page
+```
+# 部署项目到本地
+在Code下拉中选择Download as ZIP
+## 1.配置后端Django环境
+首先你需要创建并启动虚拟环境（我用的是Python3.13），在项目根目录打开 PowerShell，并执行以下命令：
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System
+```
+```
+python -m venv .venv
+```
+```
+.\.venv\Scripts\Activate.ps1
+```
+```
+python -m pip install --upgrade pip
+```
+确保你的终端输出如下，代表你的虚拟环境成功启动
+```
+(.venv) PS YOUR_PROJECT_ROOT_DIR\NEV_Price_System> 
+```
+现在安装本系统所需依赖，我在项目中保存了requiremen.txt方便快速安装依赖，运行以下命令（确保pip为最新，且Python版本大于等于3.13）：
+```
+pip install -r requirements.txt
+```
