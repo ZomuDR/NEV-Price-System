@@ -314,4 +314,93 @@ cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System\frontend
 ```
 npm run dev
 ```
-在你的Chrome浏览器中访问[http://localhost:5173]或者[http://127.0.0.1:5173]（确保你的电脑5173、5432、8000这三个端口没有被占用），看到用户登录页面，代表你成功将系统部署并运行了。
+在你的Chrome浏览器中访问 http://localhost:5173 或者 http://127.0.0.1:5173 （确保你的电脑5173、5432、8000这三个端口没有被占用），看到用户登录页面，代表你成功将系统部署并运行了。
+# Deploy the project locally
+Select "Download ZIP" from the "Code" dropdown menu, then extract the file to your project folder. It is recommended to use Visual Studio Code. I have prepared a debugging configuration, which can be directly imported into VSCode for running.
+## 1. Configure the backend Django environment
+First, you need to create and activate a virtual environment (I am using Python 3.13). Open PowerShell in the project's root directory and execute the following commands:
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System
+```
+```
+python -m venv .venv
+```
+```
+.\.venv\Scripts\Activate.ps1
+```
+```
+python -m pip install --upgrade pip
+```
+Ensure that your terminal output is as follows, indicating that your virtual environment has been successfully activated
+```
+(.venv) PS YOUR_PROJECT_ROOT_DIR\NEV_Price_System> 
+```
+Now, to install the dependencies required for this system, I have saved a `requirements.txt` file in the project for quick and easy installation. Run the following command (ensure that pip is the latest version and the Python version is greater than or equal to 3.13):
+```
+pip install -r requirements.txt
+```
+Once all dependencies are installed, you can start configuring the database.
+## 2. Configure the database
+Here, I recommend using MySQL and PostgreSQL. Django uses SQLite3 by default (but I haven't used it much, and the migration time is long). Make sure your computer has these database applications installed, and install the dependencies:
+### MySQL
+```
+pip install pymysql
+```
+### PostgreSQL
+```
+pip install psycopg2-binary
+```
+Then modify the Django global configuration file with your own database name, etc. (PostgreSQL example)
+```
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'YOUR_DB_NAME',
+    'USER': 'YOUR_DB_USER',
+    'PASSWORD': 'YOUR_DB_PASSWORD',
+    'HOST': '127.0.0.1',
+    'PORT': '5432',
+  }
+}
+```
+Migrate the database (This part automatically migrates the database tables, so there's no need to create them using SQL. I use the Django database migration command here, and you just need to create a database)
+```
+python manage.py makemigrations
+```
+```
+python manage.py migrate
+```
+Writing vehicle model data (optional) I have a sample data file named car_data_15features.xlsx in the static\data folder, which is used to train the XGBoost model. You can directly write the data into your database by running the two scripts import_data.py and update_data.py. Of course, you can also use your own data, but my system may only recognize my data format. You can modify your data to match my format, like car_data_15features.xlsx, and it should be able to be written in. I will mention this later.
+### First write (global Create)
+```
+python manage.py import_data
+```
+### Subsequent writing (updating data)
+```
+python manage.py update_data
+```
+After successful writing, you can create a Django administrator account to directly check whether the deployment is successful (you can also directly use my frontend administrator portal, which is connected to the backend admin interface)
+```
+python manage.py createsuperuser
+```
+After verifying that the data has been successfully written, it is necessary to train the model. I have already written the training script, train_model.py, which will automatically perform data cleaning and model training
+```
+python manage.py train_model
+```
+The completion of the above tasks signifies that my project has been successfully deployed on your local system. You can now run the system and proceed with testing.
+## 3. Running the System
+First, start the backend
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System
+```
+```
+python manage.py runserver 0.0.0.0:8000
+```
+Start the frontend (ensure the latest npm and node.js are installed)
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System\frontend
+```
+```
+npm run dev
+```
+Access http://localhost:5173 or http://127.0.0.1:5173 in your Chrome browser (ensure that ports 5173, 5432, and 8000 on your computer are not occupied). If you see the user login page, it means that you have successfully deployed and run the system.
