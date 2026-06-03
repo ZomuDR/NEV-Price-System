@@ -227,7 +227,7 @@ NEV_Price_System/                        # Project root directory
                 └── NotFound.vue         # 404 page
 ```
 # 部署项目到本地
-在Code下拉中选择Download as ZIP
+在Code下拉中选择Download ZIP，再解压至你的项目文件夹里，同时推荐使用Visual Studio Code，我个人准备了调试配置，直接在VSCode里面导入即可运行。
 ## 1.配置后端Django环境
 首先你需要创建并启动虚拟环境（我用的是Python3.13），在项目根目录打开 PowerShell，并执行以下命令：
 ```
@@ -250,3 +250,68 @@ python -m pip install --upgrade pip
 ```
 pip install -r requirements.txt
 ```
+等待所有依赖安装好，你可以开始配置数据库了。
+## 2.配置数据库
+这里推荐使用MySQL和PostgreSQL，Django默认使用SQLlite3（但是我没怎么用过，而且迁移时间长），确保你的电脑安装这些数据库应用，安装依赖：
+### MySQL
+```
+pip install pymysql
+```
+### PostgreSQL
+```
+pip install psycopg2-binary
+```
+然后修改Django全局配置文件为自己的数据库名称等（Postgre示例）
+```
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'YOUR_DB_NAME',
+    'USER': 'YOUR_DB_USER',
+    'PASSWORD': 'YOUR_DB_PASSWORD',
+    'HOST': '127.0.0.1',
+    'PORT': '5432',
+  }
+}
+```
+迁移数据库（这部分自动迁移数据库表，无需自己用SQL创建，我这里采用Django数据库迁移命令，你只需创建一个数据库即可）
+```
+python manage.py makemigrations
+```
+```
+python manage.py migrate
+```
+写入车型数据（可选）我在static\data里面有一份car_data_15features.xlsx是训练XGBoost模型的示例数据，可以直接通过运行import_data.py和updat_data.py这两个脚本来写入数据到你的数据库，当然你也可以使用自己的数据，不过这边我的系统可能只参考我的数据格式，你可以把你的数据修改成我的格式，如car_data_15features.xlsx一样，应该也可以写入，后续我会提到。
+### 第一次写入（全局Create）
+```
+python manage.py import_data
+```
+### 后续写入（更新数据）
+```
+python manage.py update_data
+```
+写入成功后可以创建Django管理员账号来直接检查是否成功部署（你也可以直接使用我的前端管理员入口，这个就是接的后端admin接口）
+```
+python manage.py createsuperuser
+```
+检查写入数据成功后，还需要训练模型，我这里已经写好了训练脚本脚本train_model.py，它会自动执行数据清洗和模型训练
+```
+python manage.py train_model
+```
+以上工作完成代表我的项目已经成功在你的本地部署了，接下来可以运行系统并测试了。
+## 3.运行系统
+首先启动后端
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System
+```
+```
+python manage.py runserver 0.0.0.0:8000
+```
+启动前端（确保安装最新的npm和node.js）
+```
+cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System\frontend
+```
+```
+npm run dev
+```
+在你的Chrome浏览器中访问http://localhost:5173或者http://127.0.0.1:5173（确保你的电脑5173、5432、8000这三个端口没有被占用），看到用户登录页面，代表你成功将系统部署并运行了。
