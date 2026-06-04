@@ -404,3 +404,6 @@ cd YOUR_PROJECT_ROOT_DIR\NEV_Price_System\frontend
 npm run dev
 ```
 Access http://localhost:5173 or http://127.0.0.1:5173 in your Chrome browser (ensure that ports 5173, 5432, and 8000 on your computer are not occupied). If you see the user login page, it means that you have successfully deployed and run the system.
+# 额外说明
+这里我的工作目录的根目录名为NEV_Price_System,你可以自己更名其他名称（但是建议用我的名称，便于区分），子目录里也有一个NEV_Price_System，这个是Django框架全局配置的文件（不要搞混了），manage.py是在根目录里面,而setting.py（Django全局配置）在根目录下的NEV_Price_System里，前面需要用到manage.py的指令都是在根目录下运行的，最后我在static上传了一个名为lauch.json的启动配置文件，如果你用的VSCode，可以直接导入，这样不用每次在终端输入指令了。
+在数据方面，static中的car_data_15features.xlsx是我用原始数据（car_data.xlsx）在XGBoost的特征重要性筛选前15个最具影响力的特征而得到的，我的写入脚本在car\management\commands里，里面包含填补缺失值、写入数据、更新数据、训练模型的脚本，如果你使用你的数据，在写入和更新里面找到read.xlsx
